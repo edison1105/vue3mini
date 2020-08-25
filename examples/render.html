@@ -1,0 +1,20 @@
+<script src="../dist/vue3-mini.global.js"></script>
+
+<div id="app"></div>
+
+<script>
+  const { h } = Vue3Mini
+
+  const state = {
+    name:'vue'
+  }
+  const VNode = {
+    type:'div',
+    props:null,
+    children:'hello ' + state.name
+  }
+
+  h(VNode,app)
+
+
+</script>
