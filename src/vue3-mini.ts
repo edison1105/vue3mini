@@ -25,26 +25,35 @@ export function h(vnode, container) {
 
 function mountElement(vnode, container) {
   const { type, props, children } = vnode
+  const el = (vnode.el = nodeOps.createElement(type))
 
+  // props
+  if (props !== null) {
+    for (const key in props) {
+      patchProps(el,key,props[key])
+    }
+  }
+
+  // children
   if (typeof children === 'string') {
-    const el = (vnode.el = nodeOps.createElement(type))
     nodeOps.setElementText(el, children)
     nodeOps.insert(el, container, null)
-
-    patchProps(props, el)
-
   } else if (Array.isArray(children)) {
     mountChildren(children, container)
   }
 }
 
-function patchProps(props,child) {
-  for (const key in props) {
-    if (key.startsWith('on')) {
-      const eventName = key.slice(2).toLocaleLowerCase()
-      child.addEventListener(eventName, props[key])
+function patchProps(el, key, value) {
+  // event
+  if (key.startsWith('on')) {
+    el.addEventListener(key.slice(2).toLowerCase(),value)
+  }
+  // attribute
+  else {
+    if (value) {
+      el.setAttribute(key,value)
     } else {
-      child.setAttribute(key, props[key])
+      el.removeAttribute(key)
     }
   }
 }
