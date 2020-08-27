@@ -30,8 +30,22 @@ function mountElement(vnode, container) {
     const el = (vnode.el = nodeOps.createElement(type))
     nodeOps.setElementText(el, children)
     nodeOps.insert(el, container, null)
+
+    patchProps(props, el)
+
   } else if (Array.isArray(children)) {
     mountChildren(children, container)
+  }
+}
+
+function patchProps(props,child) {
+  for (const key in props) {
+    if (key.startsWith('on')) {
+      const eventName = key.slice(2).toLocaleLowerCase()
+      child.addEventListener(eventName, props[key])
+    } else {
+      child.setAttribute(key, props[key])
+    }
   }
 }
 

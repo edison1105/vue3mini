@@ -1,0 +1,39 @@
+<script src="../dist/vue3-mini.global.js"></script>
+
+<div id="app"></div>
+
+<script>
+  const { h } = Vue3Mini
+
+  const state = {
+    name:'vue'
+  }
+
+  function handleClick(){
+    console.log('click')
+  }
+
+
+  const VNode = {
+    type:'div',
+    props:null,
+    children:[
+      {
+        type:'div',
+        props:{
+          style:'color:red;',
+          onClick:handleClick
+        },
+        children:'hello'
+      },{
+        type:'div',
+        props:null,
+        children:state.name
+      }
+    ]
+  }
+
+  h(VNode,app)
+
+
+</script>
