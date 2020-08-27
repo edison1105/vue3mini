@@ -1,0 +1,42 @@
+<script src="../dist/vue3-mini.global.js"></script>
+
+<div id="app"></div>
+
+<script>
+  const { h, reactive, effect } = Vue3Mini
+
+  const state = reactive({
+    count: 0
+  })
+
+
+  function handleClick() {
+    state.count += 1
+  }
+
+  effect(() => {
+    const VNode = {
+      type: 'div',
+      props: null,
+      children: [
+        {
+          type: 'div',
+          props: null,
+          children: `count:${state.count}`
+        },
+        {
+          type: 'button',
+          props: {
+            onClick: handleClick
+          },
+          children: '点击'
+        }
+      ]
+    }
+
+    h(VNode, app)
+  })
+
+
+
+</script>

@@ -30,7 +30,7 @@ function mountElement(vnode, container) {
   // props
   if (props !== null) {
     for (const key in props) {
-      patchProps(el,key,props[key])
+      patchProps(el, key, props[key])
     }
   }
 
@@ -46,12 +46,12 @@ function mountElement(vnode, container) {
 function patchProps(el, key, value) {
   // event
   if (key.startsWith('on')) {
-    el.addEventListener(key.slice(2).toLowerCase(),value)
+    el.addEventListener(key.slice(2).toLowerCase(), value)
   }
   // attribute
   else {
     if (value) {
-      el.setAttribute(key,value)
+      el.setAttribute(key, value)
     } else {
       el.removeAttribute(key)
     }
@@ -61,5 +61,56 @@ function patchProps(el, key, value) {
 function mountChildren(children, container) {
   children.forEach(child => {
     mountElement(child, container)
+  })
+}
+
+
+// reactivity
+
+let targetMap = new WeakMap()
+
+let activeEffect = null
+export function effect(fn) {
+  activeEffect = fn
+  fn()
+  activeEffect = null
+}
+
+function track(target, key) {
+  if (activeEffect) {
+    let depsMap = targetMap.get(target)
+    if (!depsMap) {
+      depsMap = new Map()
+      targetMap.set(target, depsMap)
+    }
+    let deps = depsMap.get(key)
+    if (!deps) {
+      deps = new Set()
+      depsMap.set(key, deps)
+    }
+    deps.add(activeEffect)
+  }
+}
+
+function trigger(target, key) {
+  let depsMap = targetMap.get(target)
+  if (depsMap) {
+    let deps = depsMap.get(key)
+    deps && deps.forEach(fn => fn())
+  }
+}
+
+export function reactive(target) {
+  return new Proxy(target, {
+    get(target, key, receiver) {
+      const res = Reflect.get(target, key)
+      track(target, key)
+      return res
+    },
+    set(target, key, value, receiver) {
+      const res = Reflect.set(target, key, value, receiver)
+      trigger(target, key)
+      return res
+    }
   })
 }
