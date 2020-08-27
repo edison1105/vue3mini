@@ -1,0 +1,64 @@
+<script src="../dist/vue3-mini.global.js"></script>
+
+<div id="app"></div>
+
+<script>
+  const { h, reactive, effect } = Vue3Mini
+
+  const state = reactive({
+    count: 1
+  })
+
+  function handleClick() {
+    state.count += 1
+  }
+
+  const Child = {
+    setup(){
+      return ()=>({
+        type: 'div',
+        props: null,
+        children: 'this is child'
+      })
+    }
+  }
+
+  const Counter = {
+    setup() {
+      console.log('setup')
+      return () => ({
+        type: 'div',
+        props: null,
+        children: [
+          {
+            type: 'h4',
+            props: null,
+            children: 'hello vue'
+          },
+          {
+            type: 'div',
+            props: {
+              style: 'color:red',
+            },
+            children: `count:${state.count}`
+          },
+          {
+            type: 'button',
+            props: {
+              onClick: handleClick
+            },
+            children: '点击'
+          },
+          {
+            type: Child,
+            props: null,
+            children: null
+          }
+        ]
+      })
+    }
+  }
+
+  h({ type: Counter, props: null, children: '' }, app)
+
+</script>

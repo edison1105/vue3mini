@@ -1,10 +1,39 @@
 export * from './reactivity'
-import { nodeOps,patchProps } from './runtime-dom'
+import { nodeOps, patchProps } from './runtime-dom'
+import { effect } from './reactivity'
 
 
 export function h(vnode, container) {
-  mountElement(vnode, container)
+
+  // mount
+  patch(null, vnode, container)
 }
+
+function patch(n1, n2, container) {
+  if (typeof n2.type === 'string') {
+    mountElement(n2, container)
+  } else if (typeof n2.type === 'object') {
+    mountComponent(n2, container)
+  }
+}
+
+function mountComponent(vnode, container) {
+  const instance = {
+    vnode,
+    type: vnode.type,
+    render: null,
+    subTree: null
+  }
+
+  const Component = instance.type
+  instance.render = Component.setup()
+
+  effect(() => {
+    instance.subTree = instance.render()
+    patch(null, instance.subTree, container)
+  })
+}
+
 
 function mountElement(vnode, container) {
   const { type, props, children } = vnode
@@ -28,6 +57,6 @@ function mountElement(vnode, container) {
 
 function mountChildren(children, container) {
   children.forEach(child => {
-    mountElement(child, container)
+    patch(null, child, container)
   })
 }
