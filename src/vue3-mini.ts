@@ -20,13 +20,23 @@ const nodeOps = {
 
 
 export function h(vnode, container) {
-  mountElement(vnode,container)
+  mountElement(vnode, container)
 }
 
 function mountElement(vnode, container) {
   const { type, props, children } = vnode
 
-  const el = (vnode.el = nodeOps.createElement(type))
-  nodeOps.setElementText(el, children)
-  nodeOps.insert(el,container,null)
+  if (typeof children === 'string') {
+    const el = (vnode.el = nodeOps.createElement(type))
+    nodeOps.setElementText(el, children)
+    nodeOps.insert(el, container, null)
+  } else if (Array.isArray(children)) {
+    mountChildren(children, container)
+  }
+}
+
+function mountChildren(children, container) {
+  children.forEach(child => {
+    mountElement(child, container)
+  })
 }

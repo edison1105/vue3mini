@@ -11,7 +11,17 @@
   const VNode = {
     type:'div',
     props:null,
-    children:'hello ' + state.name
+    children:[
+      {
+        type:'div',
+        props:null,
+        children:'hello'
+      },{
+        type:'div',
+        props:null,
+        children:state.name
+      }
+    ]
   }
 
   h(VNode,app)
