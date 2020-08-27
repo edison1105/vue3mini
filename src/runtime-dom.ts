@@ -1,4 +1,4 @@
-const nodeOps = {
+export const nodeOps = {
   insert(child, container, anchor) {
     if (anchor) {
       container.insertBefore(child)
@@ -14,8 +14,22 @@ const nodeOps = {
     return document.createElement(type)
   },
   setElementText(child, text) {
-    child.setTextContent(text)
+    child.textContent = text
   }
 }
 
-export nodeOps
+
+export function patchProps(el, key, value) {
+  // event
+  if (key.startsWith('on')) {
+    el.addEventListener(key.slice(2).toLowerCase(), value)
+  }
+  // attribute
+  else {
+    if (value) {
+      el.setAttribute(key, value)
+    } else {
+      el.removeAttribute(key)
+    }
+  }
+}
