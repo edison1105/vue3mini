@@ -14,19 +14,8 @@ const nodeOps = {
     return document.createElement(type)
   },
   setElementText(child, text) {
-    child.textContent = text
+    child.setTextContent(text)
   }
 }
 
-
-export function h(vnode, container) {
-  mountElement(vnode,container)
-}
-
-function mountElement(vnode, container) {
-  const { type, props, children } = vnode
-
-  const el = (vnode.el = nodeOps.createElement(type))
-  nodeOps.setElementText(el, children)
-  nodeOps.insert(el,container,null)
-}
+export nodeOps
