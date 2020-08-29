@@ -19,15 +19,16 @@ export const nodeOps = {
 }
 
 
-export function patchProps(el, key, value) {
+export function hostPatchProps(el, key, prev, next) {
   // event
   if (key.startsWith('on')) {
-    el.addEventListener(key.slice(2).toLowerCase(), value)
+    prev && el.removeEventListener(key.slice(2).toLowerCase(), prev)
+    next && el.addEventListener(key.slice(2).toLowerCase(), next)
   }
   // attribute
   else {
-    if (value) {
-      el.setAttribute(key, value)
+    if (next) {
+      el.setAttribute(key, next)
     } else {
       el.removeAttribute(key)
     }
