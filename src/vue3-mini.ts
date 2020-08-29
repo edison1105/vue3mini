@@ -47,16 +47,20 @@ function patchElement(n1, n2, container) {
   const newProps = n1.props
   const oldProps = n2.props
   if (newProps !== oldProps) {
-    patchProps(el, newProps, oldProps)
+    patchProps(el, oldProps, newProps)
   }
 
   // children
 }
 
-function patchProps(el, newProps, oldProps) {
+function patchProps(el, oldProps, newProps) {
   //新增
   for (const key in newProps) {
-    hostPatchProps(el, key, null, newProps[key])
+    const prev = oldProps[key]
+    const next = newProps[key]
+    if (prev !== next) {
+      hostPatchProps(el, key, prev, next)
+    }
   }
 
   //旧的有，新的没有，删除
