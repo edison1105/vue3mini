@@ -49,8 +49,34 @@ function patchElement(n1, n2, container) {
   if (newProps !== oldProps) {
     patchProps(el, oldProps, newProps)
   }
-
   // children
+  patchChildren(n1, n2, el)
+}
+
+function patchChildren(n1, n2, el) {
+  // string -> string
+  // string -> array
+  // array -> string
+  // array -> array
+
+  const c1 = n1 && n1.children
+  const c2 = n2.children
+
+  if (typeof c1 === 'string') {
+    if (typeof c2 === 'string') {
+      nodeOps.setElementText(el, c2)
+    } else if (Array.isArray(c2)) {
+      nodeOps.setElementText(el, '')
+      mountChildren(c2, el)
+    }
+  } else if (Array.isArray(c1)) {
+    if (typeof c2 === 'string') {
+      unmount(c1, el)
+      nodeOps.setElementText(el, c2)
+    } else {
+      //patchKeyedChildren
+    }
+  }
 }
 
 function patchProps(el, oldProps, newProps) {
@@ -71,6 +97,13 @@ function patchProps(el, oldProps, newProps) {
   }
 }
 
+function unmount(c1, container) {
+  for (let index = 0; index < c1.length; index++) {
+    const child = c1[index];
+    nodeOps.remove(child)
+  }
+}
+
 function mountElement(vnode, container) {
   const { type, props, children } = vnode
   const el = (vnode.el = nodeOps.createElement(type))
@@ -87,7 +120,8 @@ function mountElement(vnode, container) {
     nodeOps.setElementText(el, children)
     nodeOps.insert(el, container, null)
   } else if (Array.isArray(children)) {
-    mountChildren(children, container)
+    nodeOps.insert(el, container, null)
+    mountChildren(children, el)
   }
 }
 

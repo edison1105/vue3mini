@@ -1,0 +1,33 @@
+<script src="../dist/vue3-mini.global.js"></script>
+
+<div id="app"></div>
+
+<script>
+  const { h, reactive, effect } = Vue3Mini
+
+  const state = reactive({
+    toggle: true
+  })
+
+  function handleClick() {
+    state.toggle = !state.toggle
+  }
+
+  effect(() => {
+    const VNode = {
+      type: 'div',
+      props: {
+        onClick: handleClick
+      },
+      children: state.toggle
+        ? [
+          { type: 'div', props: null, children: 'this is one' },
+          { type: 'div', props: null, children: 'this is two' },
+        ]
+        : 'hello vue'
+    }
+
+    h(VNode, app)
+  })
+
+</script>
