@@ -107,8 +107,8 @@ function unmountChildren(children) {
   }
 }
 
-function unmount(el) {
-  nodeOps.remove(el)
+function unmount(child) {
+  nodeOps.remove(child.el)
 }
 
 function mountElement(vnode, container) {
