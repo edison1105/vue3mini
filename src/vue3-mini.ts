@@ -54,29 +54,32 @@ function patchElement(n1, n2, container) {
 }
 
 function patchChildren(n1, n2, el) {
-  // string -> string
-  // string -> array
-  // array -> string
-  // array -> array
 
   const c1 = n1 && n1.children
   const c2 = n2.children
 
   if (typeof c1 === 'string') {
-    if (typeof c2 === 'string') {
+
+    if (typeof c2 === 'string') {// string -> string
       nodeOps.setElementText(el, c2)
-    } else if (Array.isArray(c2)) {
+
+    } else if (Array.isArray(c2)) {// string -> array
       nodeOps.setElementText(el, '')
       mountChildren(c2, el)
     }
   } else if (Array.isArray(c1)) {
-    if (typeof c2 === 'string') {
+    if (typeof c2 === 'string') {//array -> string
       unmount(c1, el)
       nodeOps.setElementText(el, c2)
-    } else {
-      //patchKeyedChildren
+    } else {// array -> array
+      patchKeyedChildren(n1, n2, el)
     }
   }
+}
+
+//
+function patchKeyedChildren(n1, n2, el) {
+
 }
 
 function patchProps(el, oldProps, newProps) {
