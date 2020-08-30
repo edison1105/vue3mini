@@ -69,7 +69,7 @@ function patchChildren(n1, n2, el) {
     }
   } else if (Array.isArray(c1)) {
     if (typeof c2 === 'string') {//array -> string
-      unmount(c1, el)
+      unmountChildren(c1)
       nodeOps.setElementText(el, c2)
     } else {// array -> array
       patchKeyedChildren(n1, n2, el)
@@ -100,11 +100,15 @@ function patchProps(el, oldProps, newProps) {
   }
 }
 
-function unmount(c1, container) {
-  for (let index = 0; index < c1.length; index++) {
-    const child = c1[index];
-    nodeOps.remove(child)
+function unmountChildren(children) {
+  for (let index = 0; index < children.length; index++) {
+    const child = children[index];
+    unmount(child)
   }
+}
+
+function unmount(el) {
+  nodeOps.remove(el)
 }
 
 function mountElement(vnode, container) {
