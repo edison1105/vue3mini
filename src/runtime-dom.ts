@@ -1,7 +1,7 @@
 export const nodeOps = {
   insert(child, container, anchor) {
-    if (anchor) {
-      container.insertBefore(child)
+    if (anchor !== null) {
+      container.insertBefore(child, anchor)
     } else {
       container.appendChild(child)
     }

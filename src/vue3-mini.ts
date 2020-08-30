@@ -53,7 +53,7 @@ function patchElement(n1, n2, container) {
   patchChildren(n1, n2, el)
 }
 
-function patchChildren(n1, n2, el) {
+function patchChildren(n1, n2, container) {
 
   const c1 = n1 && n1.children
   const c2 = n2.children
@@ -61,25 +61,73 @@ function patchChildren(n1, n2, el) {
   if (typeof c1 === 'string') {
 
     if (typeof c2 === 'string') {// string -> string
-      nodeOps.setElementText(el, c2)
+      nodeOps.setElementText(container, c2)
 
     } else if (Array.isArray(c2)) {// string -> array
-      nodeOps.setElementText(el, '')
-      mountChildren(c2, el)
+      nodeOps.setElementText(container, '')
+      mountChildren(c2, container)
     }
   } else if (Array.isArray(c1)) {
     if (typeof c2 === 'string') {//array -> string
       unmountChildren(c1)
-      nodeOps.setElementText(el, c2)
+      nodeOps.setElementText(container, c2)
     } else {// array -> array
-      patchKeyedChildren(n1, n2, el)
+      patchKeyedChildren(c1, c2, container)
     }
   }
 }
 
-//
-function patchKeyedChildren(n1, n2, el) {
 
+/**
+ *
+ * @param c1 old children
+ * @param c2 new children
+ * @param container
+ */
+function patchKeyedChildren(c1, c2, container) {
+  let i = 0;
+  let e1 = c1.length - 1
+  let e2 = c2.length - 1
+
+  // 新数组key=>index 对应关系
+  let keyToNewIndexMap = new Map()
+  for (i = 0; i <= e2; i++) {
+    const key = c2[i].props.key
+    keyToNewIndexMap.set(key, i)
+  }
+
+  let newIndexToOldIndexMap = new Array(e2 + 1).fill(-1)
+
+  for (i = 0; i <= e1; i++) {
+    const oldChild = c1[i]
+    const newIndex = keyToNewIndexMap.get(oldChild.props.key)
+    //旧节点在新数组中不存在，删除
+    if (newIndex === undefined) {
+      unmount(oldChild)
+    } else {
+      newIndexToOldIndexMap[newIndex] = i
+
+      // 都存在，更新，位置可能变化了，后面再判断是否需要移动
+      patch(oldChild, c2[newIndex], container)
+    }
+  }
+
+  for (i = e2; i >= 0; i--) {
+    const newChild = c2[i]
+
+    //新增
+    if (newIndexToOldIndexMap[i] === -1) {
+      patch(null, newChild, container)
+    }
+
+    // 移动
+    const anchor = i + 1 <= e2 ? c2[i + 1].el : null
+    move(newChild.el, container, anchor)
+  }
+}
+
+function move(child, container, anchor) {
+  nodeOps.insert(child, container, anchor)
 }
 
 function patchProps(el, oldProps, newProps) {

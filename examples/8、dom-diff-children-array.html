@@ -1,0 +1,44 @@
+<script src="../dist/vue3-mini.global.js"></script>
+
+<div id="app"></div>
+
+<script>
+  const { h, reactive, effect } = Vue3Mini
+
+  const state = reactive({
+    toggle: true
+  })
+
+  function handleClick() {
+    state.toggle = !state.toggle
+  }
+
+   const oldArr = [
+      { type: 'div', props: { key: 'a' }, children: 'this is a' },
+      { type: 'div', props: { key: 'b' }, children: 'this is b' },
+      { type: 'div', props: { key: 'c' }, children: 'this is c' },
+      // { type: 'div', props: { key: 'd' }, children: 'this is d' }
+    ]
+
+  const newArr = [
+    { type: 'div', props: { key: 'a' }, children: 'this is a new' },
+    { type: 'div', props: { key: 'e' }, children: 'this is e' },
+    { type: 'div', props: { key: 'c' }, children: 'this is c' },
+    { type: 'div', props: { key: 'b' }, children: 'this is b' },
+  ]
+
+  effect(() => {
+    const VNode = {
+      type: 'div',
+      props: {
+        onClick: handleClick
+      },
+      children: state.toggle
+        ? oldArr
+        : newArr
+    }
+
+    h(VNode, app)
+  })
+
+</script>
